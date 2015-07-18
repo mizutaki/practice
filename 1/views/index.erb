@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>HOME</title>
-</head>
-<body>
 <p>HOME</p>
-</body>
-</html>
+<table>
+  <% @threads.each do |thread| %>
+  <tr>
+    <td><%= thread[:name] %><td>
+    <td><%= thread[:title] %></td>
+    <td><%= thread[:text] %></td>
+  </tr>
+  <% end %>
+</table>
+<a href="/create_thread">create_thread
