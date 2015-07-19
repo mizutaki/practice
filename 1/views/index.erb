@@ -5,6 +5,10 @@
     <td><%= thread[:name] %><td>
     <td><%= thread[:title] %></td>
     <td><%= thread[:text] %></td>
+    <td><a href="/edit_thread/<%= thread[:id] %>">edit</a>
+    <form action="/delete_thread//<%= thread[:id] %>" method="POST">
+    <td><input type="submit" value="delete"></td>
+    </form>
   </tr>
   <% end %>
 </table>

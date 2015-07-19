@@ -1,6 +1,6 @@
 require 'sinatra'
 require 'sequel'
-require 'pry'
+
 db = Sequel.sqlite('bbs.db')
 master = db[:sqlite_master]
 if master.where("type='table' and name='thread'").count == 0
@@ -26,8 +26,23 @@ get '/create_thread' do
   erb :create_thread
 end
 
-post '/create_thread' do
+get '/edit_thread/:id' do
+  @thread = @items.where(id: params[:id]).first
+  erb :edit_thread
+end
+
+post '/create_thread?' do
   @items.insert(:name => params[:name], :title => params[:title], :text => params[:text], :write_date => Time.now)
   p "name:#{params[:name]} title:#{params[:title]} text:#{params[:text]}"
-  erb :index
+  redirect '/'
+end
+
+post '/edit_thread/:id?' do
+  @items.where(id: params[:id]).update(:name => params['name'], :title => params[:title], :text => params[:text])
+  redirect '/'
+end
+
+post'/delete_thread/:id?' do
+  @items.where(id: params[:id]).delete
+  redirect '/'
 end
