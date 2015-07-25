@@ -1,0 +1,33 @@
+<p>HOME</p>
+<article>
+<section>
+<p>Post Thread!</p>
+<form action="/create_thread" method="POST">
+name:<input type="text" name="name" /><br>
+title:<input type="text" name="title" /><br>
+text:<input type="text" name="text" /><br>
+<button type="submit">Post</button>
+</form>
+</section>
+<section>
+<table>
+  <% @threads.each do |thread| %>
+  <tr>
+    <td><%= thread[:name] %><td>
+    <td><%= thread[:title] %></td>
+    <td><%= thread[:text] %></td>
+    <td><a href="/edit_thread/<%= thread[:id] %>">edit</a>
+    <form action="/delete_thread//<%= thread[:id] %>" method="POST">
+    <td><input type="submit" value="delete"></td>
+    </form>
+  </tr>
+  <% end %>
+</table>
+</section>
+</article>
+<aside>
+<section>
+<h1>edit account</h1>
+<a href="/edit_account">edit_account</a>
+</section>
+</aside>
