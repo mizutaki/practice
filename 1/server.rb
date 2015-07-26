@@ -3,6 +3,7 @@ require 'sinatra/reloader'
 require 'sequel'
 
 set :environment, :production
+enable :seessions
 
 db = Sequel.sqlite('bbs.db')
 master = db[:sqlite_master]
@@ -37,7 +38,13 @@ get '/create_account' do
   erb :create_account
 end
 
-get '/main' do
+get '/edit_account?' do
+  erb :edit_account
+end
+
+post '/main' do
+  session[:user_id] = params['login_user']
+  p session[:user_id]
   @threads = @items.all
   erb :main
 end
@@ -59,9 +66,18 @@ post '/create_account' do
   redirect '/'
 end
 
-get '/edit_account?' do
-  erb :edit_account
+post '/edit_account' do
+  p params[:login_user]
+  p params[:login_password]
+  exist_account =  @account.where(login_user: params[:login_user]).count
+  if exist_account.to_i == 0
+    @account.where(session[:user_id]).update(:login_user => params[:login_user], :login_password => params[:login_password])
+  else
+    raise ArgumentError.new
+  end
+  redirect '/'
 end
+
 
 post '/create_thread?' do
   @items.insert(:name => params[:name], :title => params[:title], :text => params[:text], :write_date => Time.now)
