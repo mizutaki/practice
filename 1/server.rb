@@ -59,6 +59,11 @@ get '/edit_thread/:id' do
   erb :edit_thread
 end
 
+get '/logout' do
+  session.clear
+  redirect '/'
+end
+
 post '/create_account' do
   p params[:login_user]
 	p params[:login_password]
