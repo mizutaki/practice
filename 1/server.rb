@@ -3,7 +3,8 @@ require 'sinatra/reloader'
 require 'sequel'
 
 set :environment, :production
-enable :seessions
+#enable :seessions
+use Rack::Session::Cookie
 
 db = Sequel.sqlite('bbs.db')
 master = db[:sqlite_master]
@@ -42,6 +43,10 @@ get '/edit_account?' do
   erb :edit_account
 end
 
+get '/delete_account?' do
+  erb :delete_account
+end
+
 post '/main' do
   session[:user_id] = params['login_user']
   p session[:user_id]
@@ -72,6 +77,16 @@ post '/edit_account' do
   exist_account =  @account.where(login_user: params[:login_user]).count
   if exist_account.to_i == 0
     @account.where(session[:user_id]).update(:login_user => params[:login_user], :login_password => params[:login_password])
+  else
+    raise ArgumentError.new
+  end
+  redirect '/'
+end
+
+post '/delete_account' do
+  exist_account =  @account.where(login_user: params[:login_user]).count
+  if exist_account.to_i == 1
+    @account.where(login_user: session[:user_id]).delete
   else
     raise ArgumentError.new
   end
