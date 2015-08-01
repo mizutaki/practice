@@ -50,6 +50,11 @@ class MainApp < Sinatra::Base
     erb :delete_account
   end
 
+  get '/main' do
+    @threads = @items.all
+    erb :main
+  end
+
   post '/main' do
     session[:user_id] = params['login_user']
     p session[:user_id]
