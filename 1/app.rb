@@ -13,7 +13,7 @@ class MainApp < Sinatra::Base
   master = db[:sqlite_master]
   if master.where("type='table' and name='thread'").count == 0
     db.create_table :thread do
-      primary_key :id
+      primary_key :thread_id
       String :name
       String :title
       String :text
@@ -51,7 +51,7 @@ class MainApp < Sinatra::Base
   end
 
   get '/main' do
-    @threads = @items.all
+    @threads = @items.order(Sequel.desc(:write_date)).limit(10)
     erb :main
   end
 
@@ -109,18 +109,19 @@ class MainApp < Sinatra::Base
 
 
   post '/create_thread?' do
-    @items.insert(:name => params[:name], :title => params[:title], :text => params[:text], :write_date => Time.now.strftime("%Y/%m/%d %H:%M:%S"))
+    @items.insert(:name => params[:name], :title => params[:title], :text => params[:text],
+                  :write_date => Time.now.strftime("%Y/%m/%d %H:%M:%S"))
     p "name:#{params[:name]} title:#{params[:title]} text:#{params[:text]}"
     redirect '/main'
   end
 
   post '/edit_thread/:id?' do
-    @items.where(id: params[:id]).update(:name => params['name'], :title => params[:title], :text => params[:text])
+    @items.where(thread_id: params[:id]).update(:name => params['name'], :title => params[:title], :text => params[:text])
     redirect '/main'
   end
 
   post'/delete_thread/:id?' do
-    @items.where(id: params[:id]).delete
+    @items.where(thread_id: params[:id]).delete
     redirect '/main'
   end
 
