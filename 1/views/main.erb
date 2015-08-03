@@ -1,4 +1,4 @@
-<p>HOME</p>
+<p>ssafafassdHOME</p>
 <article>
 <section>
 <p>Post Thread!</p>
@@ -18,7 +18,8 @@
     <td><%= thread[:title] %></td>
     <td><%= thread[:text] %></td>
     <td><%= thread[:write_date] %></td>
-		<td><a href="/edit_thread/<%= thread[:id] %>">edit</a>
+    <!--<td><a href="/edit_thread/<%= thread[:id] %>">edit</a>-->
+    <td><a href="javascript:void(0)" onClick="openWindow(<%= thread[:thread_id] %>)">edit</a>
     <form action="/delete_thread/<%= thread[:thread_id] %>" method="POST">
     <td><input type="submit" value="delete"></td>
     </form>
@@ -41,3 +42,9 @@
 <a href="/logout">logout</a>
 </section>
 </aside>
+<script type="text/javascript">
+  function openWindow(thread_id) {
+    newWindow = window.open('/edit_thread/' + thread_id, 'やほー', 'width=400, height=300, scrollbars=no, status=no, toolbar=no, location=no, member=no, resize=yes');
+
+  }
+</script>

@@ -1,6 +1,24 @@
-<form action=<%= @thread[:id] %> method="POST">
-  名前：<input type="text" name="name" value=<%= @thread[:name] %>><br>
-  タイトル：<input type="text" name="title" value=<%= @thread[:title] %>><br>
-  本文：<input type="text" name="text" value=<%= @thread[:text] %>><br>
-  <input type="submit" value="Post">
+<form action=<%= @thread[:thread_id] %> method="POST">
+<div><label>name :<input id="edit_name" type="text" name="name" value=<%= @thread[:name]%> /></label></div>
+<div><label>title:<input id="edit_text" type="text" name="title" value=<%= @thread[:title]%> /></label></div>
+<textarea cols="30" rows="5" wrap="hard" name="text"><%= @thread[:text] %>></textarea><br>
+<input id="submit-thread" type="submit" value="Post">
 </form>
+<script type="text/javascript">
+$(function() {
+  $("#submit-thread").click(function() {
+    var edit_name = $("#edit_name").val();
+    var edit_text = $("#edit_text").val();
+    var thread_id =　<%= @thread[:thread_id] %>;
+    $.ajax({
+      type: "POST",
+      url: "/edit_thread/" + thread_id,
+      data: {
+        name: edit_name,
+        text: edit_text
+      },
+      dataType: 'html'
+    });
+  });
+});
+</script>

@@ -5,7 +5,7 @@ require 'sequel'
 require 'sqlite3'
 
 class MainApp < Sinatra::Base
-  set :environment, :production
+  set :environment, :devleopment
   #enable :seessions
   use Rack::Session::Cookie
 
@@ -64,7 +64,7 @@ class MainApp < Sinatra::Base
 
 
   get '/edit_thread/:id' do
-    @thread = @items.where(id: params[:id]).first
+    @thread = @items.where(thread_id: params[:id]).first
     erb :edit_thread
   end
 
@@ -116,6 +116,8 @@ class MainApp < Sinatra::Base
   end
 
   post '/edit_thread/:id?' do
+    p params[:name]
+    p params[:text]
     @items.where(thread_id: params[:id]).update(:name => params['name'], :title => params[:title], :text => params[:text])
     redirect '/main'
   end
