@@ -44,7 +44,11 @@
 </aside>
 <script type="text/javascript">
   function openWindow(thread_id) {
-    newWindow = window.open('/edit_thread/' + thread_id, 'やほー', 'width=400, height=300, scrollbars=no, status=no, toolbar=no, location=no, member=no, resize=yes');
+    var wx = 640;
+    var wy = 480;
+    var x = (screen.height - wx) / 2;
+    var y = (screen.height - wy) / 2;
+    window.open('/edit_thread/' + thread_id, null, "width=" + wx +",height=" + wy + ",top=" + y + ", left=" + x);
 
   }
 </script>
