@@ -52,6 +52,7 @@ class MainApp < Sinatra::Base
 
   get '/main' do
     @threads = @items.order(Sequel.desc(:write_date)).limit(10)
+    @user = session[:user_id]
     erb :main
   end
 
@@ -59,6 +60,7 @@ class MainApp < Sinatra::Base
     session[:user_id] = params['login_user']
     p session[:user_id]
     @threads = @items.all
+    @user = session[:user_id]
     erb :main
   end
 
