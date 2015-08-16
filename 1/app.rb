@@ -57,13 +57,17 @@ class MainApp < Sinatra::Base
   end
 
   post '/main' do
-    session[:user_id] = params['login_user']
-    p session[:user_id]
-    @threads = @items.all
-    @user = session[:user_id]
-    erb :main
+    exist_account =  @account.where(login_user: params[:login_user]).where(login_password: params[:login_password]).count
+    if exist_account.to_i == 1
+      session[:user_id] = params['login_user']
+      p session[:user_id]
+      @threads = @items.all
+      @user = session[:user_id]
+      erb :main
+    else
+      raise ArgumentError.new
+    end
   end
-
 
   get '/edit_thread/:id' do
     @thread = @items.where(thread_id: params[:id]).first
@@ -88,11 +92,9 @@ class MainApp < Sinatra::Base
   end
 
   post '/edit_account' do
-    p params[:login_user]
-    p params[:login_password]
-    exist_account =  @account.where(login_user: params[:login_user]).count
-    if exist_account.to_i == 0
-      @account.where(session[:user_id]).update(:login_user => params[:login_user], :login_password => params[:login_password])
+    exist_account =  @account.where(login_user: params[:login_user],login_password: params[:old_login_password]).count
+    if exist_account.to_i == 1
+      @account.where(login_user: session[:user_id]).update(:login_password => params[:new_login_password])
     else
       raise ArgumentError.new
     end
@@ -108,7 +110,6 @@ class MainApp < Sinatra::Base
     end
     redirect '/'
   end
-
 
   post '/create_thread?' do
     @items.insert(:name => params[:name], :title => params[:title], :text => params[:text],
