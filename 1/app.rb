@@ -3,6 +3,7 @@ require 'sinatra/base'
 require 'sinatra/reloader'
 require 'sequel'
 require 'sqlite3'
+require_relative 'error'
 
 class MainApp < Sinatra::Base
   set :environment, :devleopment
@@ -65,7 +66,7 @@ class MainApp < Sinatra::Base
       @user = session[:user_id]
       erb :main
     else
-      raise ArgumentError.new
+      raise Error::LoginError, 'not able to log in'
     end
   end
 
@@ -132,5 +133,9 @@ class MainApp < Sinatra::Base
 
   error ArgumentError do
     erb :error
+  end
+
+  error Error::LoginError do
+    erb :login_error
   end
 end
