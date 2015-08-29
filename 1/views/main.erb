@@ -10,22 +10,25 @@
 </form>
 </section>
 <section>
-<table>
+  <hr>
   <% @threads.each do |thread| %>
-  <tr>
-    <td><%= thread[:thread_id] %></td>
-    <td><%= thread[:name] %><td>
-    <td><%= thread[:title] %></td>
-    <td><%= thread[:text] %></td>
-    <td><%= thread[:write_date] %></td>
-    <!--<td><a href="/edit_thread/<%= thread[:id] %>">edit</a>-->
-    <td><a href="javascript:void(0)" onClick="openWindow(<%= thread[:thread_id] %>)">edit</a>
-    <form action="/delete_thread/<%= thread[:thread_id] %>" method="POST">
-    <td><input type="submit" value="delete"></td>
-    </form>
-  </tr>
+  <div>
+    <div>
+    <%= thread[:thread_id] %>
+    <%= thread[:title] %>
+      <a href="javascript:void(0)" onClick="openWindow(<%= thread[:thread_id] %>)">edit</a>
+      <a href="javascript:void(0)" onClick="deleteThread(<%= thread[:thread_id] %>)">delete</a>
+    </div>
+    <div>
+    <%= thread[:name] %>
+    <%= thread[:write_date] %>
+    </div>
+    <div>
+      <p><%= thread[:text] %></p>
+    </div>
+  </div>
+  <hr>
   <% end %>
-</table>
 </section>
 </article>
 <aside>
@@ -50,5 +53,14 @@
     var y = (screen.height - wy) / 2;
     window.open('/edit_thread/' + thread_id, null, "width=" + wx +",height=" + wy + ",top=" + y + ", left=" + x);
 
+  }
+
+  function deleteThread(thread_id) {
+    console.log(thread_id);
+    if (window.confirm('削除しますか?')) {
+      //TODO delete function
+    } else {
+      return false;
+    }
   }
 </script>
