@@ -16,16 +16,16 @@
   <div>
     <div>
     <%= thread[:thread_id] %>
-    <%= thread[:title] %>
+    <span id="title_<%= thread[:thread_id] %>"><%= thread[:title] %></span>
       <a href="javascript:void(0)" onClick="openWindow(<%= thread[:thread_id] %>)">edit</a>
       <a href="javascript:void(0)" onClick="deleteThread(<%= thread[:thread_id] %>)">delete</a>
     </div>
     <div>
-    <%= thread[:name] %>
-    <%= thread[:write_date] %>
+    <span id="name_<%= thread[:thread_id] %>"><%= thread[:name] %></span>
+    <span id="write_date_<%= thread[:thread_id] %>"><%= thread[:write_date] %></span>
     </div>
     <div>
-      <p><%= thread[:text] %></p>
+      <p id="text_<%= thread[:thread_id] %>"><%= thread[:text] %></p>
     </div>
   </div>
   <hr>

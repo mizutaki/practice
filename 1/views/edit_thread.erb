@@ -1,13 +1,14 @@
-<form action=<%= @thread[:thread_id] %> method="POST">
+
+<script type="text/javascript" src="./js/main.js"></script>
 <div><label>name :<input id="edit_name" type="text" name="name" value=<%= @thread[:name]%> /></label></div>
-<div><label>title:<input id="edit_text" type="text" name="title" value=<%= @thread[:title]%> /></label></div>
-<textarea cols="30" rows="5" wrap="hard" name="text"><%= @thread[:text] %>></textarea><br>
+<div><label>title:<input id="edit_title" type="text" name="title" value=<%= @thread[:title]%> /></label></div>
+<textarea id="edit_text" cols="30" rows="5" wrap="hard" name="text"><%= @thread[:text] %>></textarea><br>
 <input id="submit-thread" type="submit" value="Post">
-</form>
 <script type="text/javascript">
 $(function() {
   $("#submit-thread").click(function() {
     var edit_name = $("#edit_name").val();
+    var edit_title = $("#edit_title").val();
     var edit_text = $("#edit_text").val();
     var thread_id =　<%= @thread[:thread_id] %>;
     $.ajax({
@@ -19,6 +20,9 @@ $(function() {
       },
       dataType: 'html'
     }).done(function(data) {
+      window.opener.document.getElementById('name_'+ thread_id).innerHTML = edit_name;
+      window.opener.document.getElementById('title_'+ thread_id).innerHTML = edit_title;
+      window.opener.document.getElementById('text_'+ thread_id).innerHTML = edit_text;
       alert("edit OK");
       window.close();
     }).fail(function(data) {
