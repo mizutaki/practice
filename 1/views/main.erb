@@ -1,3 +1,4 @@
+<script type="text/javascript" src="./js/main.js"></script>
 <p><%= @user %>　Welocome </p>
 <article>
 <section>
@@ -45,22 +46,3 @@
 <a href="/logout">logout</a>
 </section>
 </aside>
-<script type="text/javascript">
-  function openWindow(thread_id) {
-    var wx = 640;
-    var wy = 480;
-    var x = (screen.height - wx) / 2;
-    var y = (screen.height - wy) / 2;
-    window.open('/edit_thread/' + thread_id, null, "width=" + wx +",height=" + wy + ",top=" + y + ", left=" + x);
-
-  }
-
-  function deleteThread(thread_id) {
-    console.log(thread_id);
-    if (window.confirm('削除しますか?')) {
-      //TODO delete function
-    } else {
-      return false;
-    }
-  }
-</script>
