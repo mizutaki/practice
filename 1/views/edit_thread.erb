@@ -1,8 +1,7 @@
-
 <script type="text/javascript" src="./js/main.js"></script>
-<div><label>name :<input id="edit_name" type="text" name="name" value=<%= @thread[:name]%> /></label></div>
-<div><label>title:<input id="edit_title" type="text" name="title" value=<%= @thread[:title]%> /></label></div>
-<textarea id="edit_text" cols="30" rows="5" wrap="hard" name="text"><%= @thread[:text] %>></textarea><br>
+<div><label>name :<input id="edit_name" type="text" name="name" value="<%= @thread[:name]%>"/></label></div>
+<div><label>title:<input id="edit_title" type="text" name="title" value="<%= @thread[:title]%>"/></label></div>
+<textarea id="edit_text" cols="30" rows="5" wrap="hard" name="text"><%= @thread[:text] %></textarea><br>
 <input id="submit-thread" type="submit" value="Post">
 <script type="text/javascript">
 $(function() {
