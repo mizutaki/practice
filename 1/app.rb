@@ -48,6 +48,7 @@ class MainApp < Sinatra::Base
   end
 
   get '/delete_account?' do
+    @current_login_user = session[:user_id]
     erb :delete_account
   end
 
@@ -103,7 +104,7 @@ class MainApp < Sinatra::Base
   end
 
   post '/delete_account' do
-    exist_account =  @account.where(login_user: params[:login_user]).count
+    exist_account =  @account.where(login_user: params[:login_user], login_password: params[:login_password]).count
     if exist_account.to_i == 1
       @account.where(login_user: session[:user_id]).delete
     else

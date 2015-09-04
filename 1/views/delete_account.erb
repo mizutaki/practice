@@ -1,5 +1,6 @@
+<script type="text/javascript" src="./js/main.js"></script>
 <form action="delete_account" method="POST">
-<div><input type="text" name="login_user" /></div>
-<div><input type="text" name="login_password" /></div>
-<input type="submit" value="delete_account" />
+<div><label>user_name :<input id="delete_user" type="text" name="login_user" required/></label></div>
+<div><label>password :<input id="delete_user_password" type="text" name="login_password" required/></label></div>
+<input type="button" value="delete_account" onClick="deleteAccount('<%= @current_login_user %>')" />
 </form>

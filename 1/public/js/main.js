@@ -22,3 +22,27 @@ function deleteThread(thread_id) {
     return false;
   }
 }
+
+function deleteAccount(current_login_user) {
+  var delete_user = $("#delete_user").val();
+  var delete_user_password = $("#delete_user_password").val();
+  if (current_login_user === delete_user) {
+    $.ajax({
+      type: "POST",
+      url: "/delete_account",
+      data: {
+        login_user: delete_user,
+        login_password: delete_user_password
+      },
+      dataType: 'html'
+    }).done(function(data) {
+      alert("delete OK");
+      document.location = "/";
+    }).fail(function(data) {
+      alert("delte ERROR");
+    }
+    );
+  } else {
+    alert("You can not delete other than your own");
+  }
+}
