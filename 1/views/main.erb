@@ -3,9 +3,11 @@
 <article>
 <section>
 <p>Post Thread!</p>
-<form action="/create_thread" method="POST">
+<form action="/create_thread" method="POST" enctype="multipart/form-data">
 <div><label>name :<input type="text" name="name" required/></label></div>
 <div><label>title:<input type="text" name="title" required/></label></div>
+<div><lable><input type="file" name="file" accept="image/*" /></label></div>
+<input type="hidden" name="post_username" value="<%= @user %>">
 <textarea cols="30" rows="5" wrap="hard" name="text" placeholder="Please input comment!!!" required></textarea><br>
 <button type="submit">Post</button>
 </form>
@@ -18,7 +20,9 @@
     <%= thread[:thread_id] %>
     <span id="title_<%= thread[:thread_id] %>"><%= thread[:title] %></span>
       <a href="javascript:void(0)" onClick="openWindow(<%= thread[:thread_id] %>)">edit</a>
+    <% if  @user.eql? thread[:post_username] %>
       <a href="javascript:void(0)" onClick="deleteThread(<%= thread[:thread_id] %>)">delete</a>
+    <% end %>
     </div>
     <div>
     <span id="name_<%= thread[:thread_id] %>"><%= thread[:name] %></span>

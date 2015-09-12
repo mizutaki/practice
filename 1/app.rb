@@ -19,6 +19,7 @@ class MainApp < Sinatra::Base
       String :title
       String :text
       String :write_date
+      String :post_username
     end
   end
   if master.where("type='table' and name='account'").count == 0
@@ -115,7 +116,7 @@ class MainApp < Sinatra::Base
 
   post '/create_thread?' do
     @items.insert(:name => params[:name], :title => params[:title], :text => params[:text],
-                  :write_date => Time.now.strftime("%Y/%m/%d %H:%M:%S"))
+                :write_date => Time.now.strftime("%Y/%m/%d %H:%M:%S"), :post_username => params[:post_username])
     p "name:#{params[:name]} title:#{params[:title]} text:#{params[:text]}"
     redirect '/main'
   end
