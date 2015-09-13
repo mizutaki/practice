@@ -55,7 +55,27 @@ class MainApp < Sinatra::Base
 
   get '/main' do
     @threads = @items.order(Sequel.desc(:write_date)).limit(10)
+    @pagination = page_count
     @user = session[:user_id]
+    erb :main
+  end
+
+  get '/page/:number' do
+    number = params['number'].to_i * 10
+    front = 0
+    back =0
+    if number == 10
+      front = 1
+      back = number
+    else
+      front = number -9
+      back = number
+    end
+    contens = @items.order(Sequel.desc(:write_date)).all
+    f = front-1
+    b = back-1
+    @threads = contens[f..b]
+    @pagination = page_count
     erb :main
   end
 
@@ -63,8 +83,8 @@ class MainApp < Sinatra::Base
     exist_account =  @account.where(login_user: params[:login_user]).where(login_password: params[:login_password]).count
     if exist_account.to_i == 1
       session[:user_id] = params['login_user']
-      p session[:user_id]
-      @threads = @items.all
+      @threads = @items.order(Sequel.desc(:write_date)).limit(10)
+      @pagination = page_count
       @user = session[:user_id]
       erb :main
     else
@@ -139,5 +159,16 @@ class MainApp < Sinatra::Base
 
   error Error::LoginError do
     erb :login_error
+  end
+
+  def page_count
+    count = @items.count
+    division = count.divmod(10)
+    if division[1] == 0
+      d = division[0]
+    else
+      d = division[0] + 1
+    end
+    pagination = 1..d
   end
 end

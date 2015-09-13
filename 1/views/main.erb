@@ -13,6 +13,9 @@
 </form>
 </section>
 <section>
+  <% @pagination.each do |page| %>
+    <a href="/page/<%= page %>"><%= page %></a>
+  <% end %>
   <hr>
   <% @threads.each do |thread| %>
   <div>
