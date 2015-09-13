@@ -19,8 +19,8 @@
     <div>
     <%= thread[:thread_id] %>
     <span id="title_<%= thread[:thread_id] %>"><%= thread[:title] %></span>
-      <a href="javascript:void(0)" onClick="openWindow(<%= thread[:thread_id] %>)">edit</a>
     <% if  @user.eql? thread[:post_username] %>
+      <a href="javascript:void(0)" onClick="openWindow(<%= thread[:thread_id] %>)">edit</a>
       <a href="javascript:void(0)" onClick="deleteThread(<%= thread[:thread_id] %>)">delete</a>
     <% end %>
     </div>
