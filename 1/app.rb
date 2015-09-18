@@ -20,6 +20,7 @@ class MainApp < Sinatra::Base
       String :text
       String :write_date
       String :post_username
+      blob :attachment_file
     end
   end
   if master.where("type='table' and name='account'").count == 0
@@ -135,9 +136,11 @@ class MainApp < Sinatra::Base
   end
 
   post '/create_thread?' do
+    file = params["file"]
+    blob = Sequel.blob(File.read(file[:tempfile])) unless file == nil
     @items.insert(:name => params[:name], :title => params[:title], :text => params[:text],
-                :write_date => Time.now.strftime("%Y/%m/%d %H:%M:%S"), :post_username => params[:post_username])
-    p "name:#{params[:name]} title:#{params[:title]} text:#{params[:text]}"
+                :write_date => Time.now.strftime("%Y/%m/%d %H:%M:%S"), :post_username => params[:post_username], 
+                :attachment_file =>blob)
     redirect '/main'
   end
 
