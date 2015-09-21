@@ -9,6 +9,7 @@ class MainApp < Sinatra::Base
   set :environment, :devleopment
   #enable :seessions
   use Rack::Session::Cookie
+  set :public, File.dirname(__FILE__) + '/public'
 
   db = Sequel.sqlite('bbs.db')
   master = db[:sqlite_master]
@@ -21,6 +22,7 @@ class MainApp < Sinatra::Base
       String :write_date
       String :post_username
       blob :attachment_file
+      string :attachment_file_path
     end
   end
   if master.where("type='table' and name='account'").count == 0
@@ -56,6 +58,7 @@ class MainApp < Sinatra::Base
 
   get '/main' do
     @threads = @items.order(Sequel.desc(:write_date)).limit(10)
+    create_imagefiles(@threads)
     @pagination = page_count
     @user = session[:user_id]
     erb :main
@@ -85,6 +88,7 @@ class MainApp < Sinatra::Base
     if exist_account.to_i == 1
       session[:user_id] = params['login_user']
       @threads = @items.order(Sequel.desc(:write_date)).limit(10)
+      create_imagefiles(@threads)
       @pagination = page_count
       @user = session[:user_id]
       erb :main
@@ -137,10 +141,13 @@ class MainApp < Sinatra::Base
 
   post '/create_thread?' do
     file = params["file"]
-    blob = Sequel.blob(File.read(file[:tempfile])) unless file == nil
+    unless file == nil
+      file_path = File.basename(file[:tempfile].path)
+      blob = Sequel.blob(File.read(file[:tempfile]))
+    end
     @items.insert(:name => params[:name], :title => params[:title], :text => params[:text],
                 :write_date => Time.now.strftime("%Y/%m/%d %H:%M:%S"), :post_username => params[:post_username], 
-                :attachment_file =>blob)
+                :attachment_file =>blob, :attachment_file_path => file_path)
     redirect '/main'
   end
 
@@ -173,5 +180,15 @@ class MainApp < Sinatra::Base
       d = division[0] + 1
     end
     pagination = 1..d
+  end
+
+  def create_imagefiles(threads)
+    threads.each do |thread|
+      unless thread[:attachment_file_path] == nil
+        File.open("./public/images/" + thread[:attachment_file_path], "wb") do |w|
+          w.write thread[:attachment_file]
+        end
+      end
+    end
   end
 end
