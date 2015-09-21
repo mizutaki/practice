@@ -34,6 +34,9 @@
     <div>
       <p id="text_<%= thread[:thread_id] %>"><%= thread[:text] %></p>
     </div>
+    <% unless thread[:attachment_file_path] == nil %>
+      <img src="images/<%= thread[:attachment_file_path] %>" width="450">
+    <% end %>
   </div>
   <hr>
   <% end %>
