@@ -1,17 +1,3 @@
-<script type="text/javascript" src="./js/main.js"></script>
-<p><%= @user %>　Welocome </p>
-<article>
-<section>
-<p>Post Thread!</p>
-<form action="/create_thread" method="POST" enctype="multipart/form-data">
-<div><label>name :<input type="text" name="name" required/></label></div>
-<div><label>title:<input type="text" name="title" required/></label></div>
-<div><lable><input type="file" name="file" accept="image/*" /></label></div>
-<input type="hidden" name="post_username" value="<%= @user %>">
-<textarea cols="30" rows="5" wrap="hard" name="text" placeholder="Please input comment!!!" required></textarea><br>
-<button type="submit">Post</button>
-</form>
-</section>
 <section>
   <% @pagination.each do |page| %>
     <a href="/page/<%= page %>"><%= page %></a>
@@ -41,18 +27,3 @@
   <hr>
   <% end %>
 </section>
-</article>
-<aside>
-<section>
-<h1>edit account</h1>
-<a href="/edit_account">edit_account</a>
-</section>
-<section>
-<h1>delete account</h1>
-<a href="/delete_account">delete_account</a>
-</section>
-<section>
-<h1>logout</h1>
-<a href="/logout">logout</a>
-</section>
-</aside>

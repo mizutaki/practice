@@ -13,22 +13,44 @@ class MainApp < Sinatra::Base
     @db = DB.new
   end
 
+  helpers do
+    def page_count
+      count = @db.thread_max_count
+      division = count.divmod(10)
+      if division[1] == 0
+        d = division[0]
+      else
+        d = division[0] + 1
+      end
+      pagination = 1..d
+    end
+
+    def create_imagefiles(threads)
+      threads.each do |thread|
+        unless thread[:attachment_file_path] == nil
+          File.open("./public/images/" + thread[:attachment_file_path], "wb") do |w|
+            w.write thread[:attachment_file]
+          end
+        end
+      end
+    end
+  end
 
   get '/' do
     erb :login
   end
 
   get '/create_account' do
-    erb :create_account
+    erb :'account/create_account'
   end
 
   get '/edit_account?' do
-    erb :edit_account
+    erb :'account/edit_account'
   end
 
   get '/delete_account?' do
     @current_login_user = session[:user_id]
-    erb :delete_account
+    erb :'account/delete_account'
   end
 
   get '/main' do
@@ -36,7 +58,7 @@ class MainApp < Sinatra::Base
     create_imagefiles(@threads)
     @pagination = page_count
     @user = session[:user_id]
-    erb :main
+    erb :'main/index'
   end
 
   get '/page/:number' do
@@ -55,7 +77,7 @@ class MainApp < Sinatra::Base
     b = back-1
     @threads = contens[f..b]
     @pagination = page_count
-    erb :main
+    erb :'main/index'
   end
 
   post '/main' do
@@ -66,7 +88,7 @@ class MainApp < Sinatra::Base
       create_imagefiles(@threads)
       @pagination = page_count
       @user = session[:user_id]
-      erb :main
+      erb :'main/index'
     else
       raise Error::LoginError, 'not able to log in'
     end
@@ -74,7 +96,7 @@ class MainApp < Sinatra::Base
 
   get '/edit_thread/:id' do
     @thread = @db.get_thread(params[:id])
-    erb :edit_thread
+    erb :'thread/edit_thread'
   end
 
   get '/logout' do
@@ -87,7 +109,7 @@ class MainApp < Sinatra::Base
     unless exist_account
       @db.insert_account(params)
     else
-      raise ArgumentError.new
+      raise ArgumentError.new, 'not create account'
     end
     redirect '/'
   end
@@ -97,7 +119,7 @@ class MainApp < Sinatra::Base
     if exist_account
       @db.update_account(session[:user_id], params[:new_login_password])
     else
-      raise ArgumentError.new
+      raise ArgumentError.new, 'not edit account'
     end
     redirect '/'
   end
@@ -107,7 +129,7 @@ class MainApp < Sinatra::Base
     if exist_account
       @db.delete_account(session[:user_id])
     else
-      raise ArgumentError.new
+      raise ArgumentError.new, 'not delete account'
     end
     redirect '/'
   end
@@ -133,31 +155,12 @@ class MainApp < Sinatra::Base
   end
 
   error ArgumentError do
-    erb :error
+    @error_message = params[:captures].first
+    erb :'error/error'
   end
 
   error Error::LoginError do
-    erb :login_error
-  end
-
-  def page_count
-    count = @db.thread_max_count
-    division = count.divmod(10)
-    if division[1] == 0
-      d = division[0]
-    else
-      d = division[0] + 1
-    end
-    pagination = 1..d
-  end
-
-  def create_imagefiles(threads)
-    threads.each do |thread|
-      unless thread[:attachment_file_path] == nil
-        File.open("./public/images/" + thread[:attachment_file_path], "wb") do |w|
-          w.write thread[:attachment_file]
-        end
-      end
-    end
+    @error_message = params[:captures].first
+    erb :'error/login_error'
   end
 end
