@@ -11,6 +11,7 @@ class MainApp < Sinatra::Base
 
   before do
     @db = DB.new
+    @user = session[:user_id]
   end
 
   helpers do
@@ -49,7 +50,7 @@ class MainApp < Sinatra::Base
   end
 
   get '/delete_account?' do
-    @current_login_user = session[:user_id]
+    @current_login_user = @user
     erb :'account/delete_account'
   end
 
@@ -57,7 +58,6 @@ class MainApp < Sinatra::Base
     @threads = @db.get_threads(10)
     create_imagefiles(@threads)
     @pagination = page_count
-    @user = session[:user_id]
     erb :'main/index'
   end
 
@@ -97,6 +97,13 @@ class MainApp < Sinatra::Base
   get '/edit_thread/:id' do
     @thread = @db.get_thread(params[:id])
     erb :'thread/edit_thread'
+  end
+
+  get '/reply_thread/:id' do
+    @thread = @db.get_thread(params[:id])
+    @thread[:title].insert(0, "Re>")
+    @thread[:text].insert(0, "Re>")
+    erb :'thread/reply_thread'
   end
 
   get '/logout' do
@@ -147,6 +154,11 @@ class MainApp < Sinatra::Base
   post '/edit_thread/:id?' do
     @db.update_thread(params)
     redirect '/main'
+  end
+
+  post '/reply_thread' do
+    @db.insert_thread(params,nil,nil)
+    redirect'/main'
   end
 
   post'/delete_thread/:id?' do

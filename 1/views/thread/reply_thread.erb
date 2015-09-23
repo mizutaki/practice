@@ -1,0 +1,34 @@
+<script type="text/javascript" src="./js/main.js"></script>
+<div><label>name :<input id="reply_name" type="text" name="name" value="<%= @thread[:name]%>"/></label></div>
+<div><label>title:<input id="reply_title" type="text" name="title" value="<%= @thread[:title]%>"/></label></div>
+<textarea id="reply_text" cols="30" rows="5" wrap="hard" name="text"><%= @thread[:text] %></textarea><br>
+<input id="reply_thread" type="submit" value="Post">
+<input id="reply_user" type="hidden" value="<%= @user %>">
+<script type="text/javascript">
+$(function() {
+  $("#reply_thread").click(function() {
+    var reply_name = $("#reply_name").val();
+    var reply_title = $("#reply_title").val();
+    var reply_text = $("#reply_text").val();
+    var reply_user = $("#reply_user").val();
+    $.ajax({
+      type: "POST",
+      url: "/reply_thread",
+      data: {
+        name: reply_name,
+        title: reply_title,
+        text: reply_text,
+        post_username: reply_user
+      },
+      dataType: 'html'
+    }).done(function(data) {
+      alert("reply OK");
+      window.close();
+    }).fail(function(data) {
+      alert("reply ERROR");
+      window.close();
+    }
+    );
+  });
+});
+</script>

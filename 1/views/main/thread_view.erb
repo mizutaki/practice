@@ -9,8 +9,10 @@
     <%= thread[:thread_id] %>
     <span id="title_<%= thread[:thread_id] %>"><%= thread[:title] %></span>
     <% if  @user.eql? thread[:post_username] %>
-      <a href="javascript:void(0)" onClick="openWindow(<%= thread[:thread_id] %>)">edit</a>
+      <a href="javascript:void(0)" onClick="openEditWindow(<%= thread[:thread_id] %>)">edit</a>
       <a href="javascript:void(0)" onClick="deleteThread(<%= thread[:thread_id] %>)">delete</a>
+    <% else %>
+      <a href="javascript:void(0)" onClick="openReplyWindow(<%= thread[:thread_id] %>)">reply</a>
     <% end %>
     </div>
     <div>
