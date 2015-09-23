@@ -1,9 +1,17 @@
-function openWindow(thread_id) {
+function openEditWindow(thread_id) {
   var wx = 640;
   var wy = 480;
   var x = (screen.height - wx) / 2;
   var y = (screen.height - wy) / 2;
   window.open('/edit_thread/' + thread_id, null, "width=" + wx +",height=" + wy + ",top=" + y + ", left=" + x);
+}
+
+function openReplyWindow(thread_id) {
+  var wx = 640;
+  var wy = 480;
+  var x = (screen.height - wx) / 2;
+  var y = (screen.height - wy) / 2;
+  window.open('/reply_thread/' + thread_id, null, "width=" + wx +",height=" + wy + ",top=" + y + ", left=" + x);
 }
 
 function deleteThread(thread_id) {
