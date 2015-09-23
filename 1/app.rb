@@ -1,67 +1,64 @@
 require 'sinatra'
 require 'sinatra/base'
 require 'sinatra/reloader'
-require 'sequel'
-require 'sqlite3'
+require_relative 'db'
 require_relative 'error'
 
 class MainApp < Sinatra::Base
   set :environment, :devleopment
-  #enable :seessions
   use Rack::Session::Cookie
   set :public, File.dirname(__FILE__) + '/public'
 
-  db = Sequel.sqlite('bbs.db')
-  master = db[:sqlite_master]
-  if master.where("type='table' and name='thread'").count == 0
-    db.create_table :thread do
-      primary_key :thread_id
-      String :name
-      String :title
-      String :text
-      String :write_date
-      String :post_username
-      blob :attachment_file
-      string :attachment_file_path
-    end
-  end
-  if master.where("type='table' and name='account'").count == 0
-    db.create_table :account do
-      primary_key :id
-      String :login_user
-      String :login_password
-    end
-  end
-
   before do
-    @items = db[:thread]
-    @account = db[:account]
+    @db = DB.new
   end
 
+  helpers do
+    def page_count
+      count = @db.thread_max_count
+      division = count.divmod(10)
+      if division[1] == 0
+        d = division[0]
+      else
+        d = division[0] + 1
+      end
+      pagination = 1..d
+    end
+
+    def create_imagefiles(threads)
+      threads.each do |thread|
+        unless thread[:attachment_file_path] == nil
+          File.open("./public/images/" + thread[:attachment_file_path], "wb") do |w|
+            w.write thread[:attachment_file]
+          end
+        end
+      end
+    end
+  end
 
   get '/' do
     erb :login
   end
 
   get '/create_account' do
-    erb :create_account
+    erb :'account/create_account'
   end
 
   get '/edit_account?' do
-    erb :edit_account
+    erb :'account/edit_account'
   end
 
   get '/delete_account?' do
     @current_login_user = session[:user_id]
-    erb :delete_account
+    erb :'account/delete_account'
   end
 
   get '/main' do
-    @threads = @items.order(Sequel.desc(:write_date)).limit(10)
+    @threads = @db.get_threads(10)
     create_imagefiles(@threads)
     @pagination = page_count
     @user = session[:user_id]
-    erb :main
+    erb :'main/index'
   end
 
   get '/page/:number' do
@@ -75,31 +72,31 @@ class MainApp < Sinatra::Base
       front = number -9
       back = number
     end
-    contens = @items.order(Sequel.desc(:write_date)).all
+    contens = @db.get_threads(nil)
     f = front-1
     b = back-1
     @threads = contens[f..b]
     @pagination = page_count
-    erb :main
+    erb :'main/index'
   end
 
   post '/main' do
-    exist_account =  @account.where(login_user: params[:login_user]).where(login_password: params[:login_password]).count
-    if exist_account.to_i == 1
+    exist_account =  @db.exist_account(params[:login_user], params[:login_password])
+    if exist_account
       session[:user_id] = params['login_user']
-      @threads = @items.order(Sequel.desc(:write_date)).limit(10)
+      @threads = @db.get_threads(10)
       create_imagefiles(@threads)
       @pagination = page_count
       @user = session[:user_id]
-      erb :main
+      erb :'main/index'
     else
       raise Error::LoginError, 'not able to log in'
     end
   end
 
   get '/edit_thread/:id' do
-    @thread = @items.where(thread_id: params[:id]).first
-    erb :edit_thread
+    @thread = @db.get_thread(params[:id])
+    erb :'thread/edit_thread'
   end
 
   get '/logout' do
@@ -108,33 +105,31 @@ class MainApp < Sinatra::Base
   end
 
   post '/create_account' do
-    p params[:login_user]
-    p params[:login_password]
-    exist_account =  @account.where(login_user: params[:login_user]).count
-    if exist_account.to_i == 0
-      @account.insert(:login_user => params[:login_user], :login_password => params[:login_password])
+    exist_account = @db.exist_account(params[:login_user], params[:login_password])
+    unless exist_account
+      @db.insert_account(params)
     else
-      raise ArgumentError.new
+      raise ArgumentError.new, 'not create account'
     end
     redirect '/'
   end
 
   post '/edit_account' do
-    exist_account =  @account.where(login_user: params[:login_user],login_password: params[:old_login_password]).count
-    if exist_account.to_i == 1
-      @account.where(login_user: session[:user_id]).update(:login_password => params[:new_login_password])
+    exist_account = @db.exist_account(params[:login_user], params[:old_login_password])
+    if exist_account
+      @db.update_account(session[:user_id], params[:new_login_password])
     else
-      raise ArgumentError.new
+      raise ArgumentError.new, 'not edit account'
     end
     redirect '/'
   end
 
   post '/delete_account' do
-    exist_account =  @account.where(login_user: params[:login_user], login_password: params[:login_password]).count
-    if exist_account.to_i == 1
-      @account.where(login_user: session[:user_id]).delete
+    exist_account = @db.exist_account(params[:login_user], params[:login_password])
+    if exist_account
+      @db.delete_account(session[:user_id])
     else
-      raise ArgumentError.new
+      raise ArgumentError.new, 'not delete account'
     end
     redirect '/'
   end
@@ -145,50 +140,27 @@ class MainApp < Sinatra::Base
       file_path = File.basename(file[:tempfile].path)
       blob = Sequel.blob(File.read(file[:tempfile]))
     end
-    @items.insert(:name => params[:name], :title => params[:title], :text => params[:text],
-                :write_date => Time.now.strftime("%Y/%m/%d %H:%M:%S"), :post_username => params[:post_username], 
-                :attachment_file =>blob, :attachment_file_path => file_path)
+    @db.insert_thread(params, blob, file_path)
     redirect '/main'
   end
 
   post '/edit_thread/:id?' do
-    p params[:name]
-    p params[:text]
-    @items.where(thread_id: params[:id]).update(:name => params['name'], :title => params[:title], :text => params[:text])
+    @db.update_thread(params)
     redirect '/main'
   end
 
   post'/delete_thread/:id?' do
-    @items.where(thread_id: params[:id]).delete
+    @db.delete_thread(params)
     redirect '/main'
   end
 
   error ArgumentError do
-    erb :error
+    @error_message = params[:captures].first
+    erb :'error/error'
   end
 
   error Error::LoginError do
-    erb :login_error
-  end
-
-  def page_count
-    count = @items.count
-    division = count.divmod(10)
-    if division[1] == 0
-      d = division[0]
-    else
-      d = division[0] + 1
-    end
-    pagination = 1..d
-  end
-
-  def create_imagefiles(threads)
-    threads.each do |thread|
-      unless thread[:attachment_file_path] == nil
-        File.open("./public/images/" + thread[:attachment_file_path], "wb") do |w|
-          w.write thread[:attachment_file]
-        end
-      end
-    end
+    @error_message = params[:captures].first
+    erb :'error/login_error'
   end
 end

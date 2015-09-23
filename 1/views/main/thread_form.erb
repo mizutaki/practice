@@ -1,0 +1,11 @@
+<section>
+<p>Post Thread!</p>
+<form action="/create_thread" method="POST" enctype="multipart/form-data">
+<div><label>name :<input type="text" name="name" required/></label></div>
+<div><label>title:<input type="text" name="title" required/></label></div>
+<div><lable><input type="file" name="file" accept="image/*" /></label></div>
+<input type="hidden" name="post_username" value="<%= @user %>">
+<textarea cols="30" rows="5" wrap="hard" name="text" placeholder="Please input comment!!!" required></textarea><br>
+<button type="submit">Post</button>
+</form>
+</section>
