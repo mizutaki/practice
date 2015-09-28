@@ -15,13 +15,15 @@ $(function() {
       url: "/edit_thread/" + thread_id,
       data: {
         name: edit_name,
+        title: edit_title,
         text: edit_text
       },
       dataType: 'html'
     }).done(function(data) {
-      window.opener.document.getElementById('name_'+ thread_id).innerHTML = edit_name;
-      window.opener.document.getElementById('title_'+ thread_id).innerHTML = edit_title;
-      window.opener.document.getElementById('text_'+ thread_id).innerHTML = edit_text;
+      json = JSON.parse(data);
+      window.opener.document.getElementById('name_'+ thread_id).innerHTML = json.name;
+      window.opener.document.getElementById('title_'+ thread_id).innerHTML = json.title;
+      window.opener.document.getElementById('text_'+ thread_id).innerHTML = json.text;
       alert("edit OK");
       window.close();
     }).fail(function(data) {
