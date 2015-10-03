@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/base'
 require 'sinatra/reloader'
+require 'sinatra/json'
 require_relative 'db'
 require_relative 'error'
 
@@ -34,6 +35,12 @@ class MainApp < Sinatra::Base
           end
         end
       end
+    end
+
+    def check_parameter(params)
+      params[:name] = 'no name' if params[:name].empty?
+      params[:title] = 'no title' if params[:title].empty?
+      return params
     end
   end
 
@@ -147,18 +154,20 @@ class MainApp < Sinatra::Base
   end
 
   post '/create_thread?' do
+    after_params = check_parameter(params)
     file = params["file"]
     unless file == nil
       file_path = File.basename(file[:tempfile].path)
       blob = Sequel.blob(File.read(file[:tempfile]))
     end
-    @db.insert_thread(params, blob, file_path)
+    @db.insert_thread(after_params, blob, file_path)
     redirect '/main'
   end
 
   post '/edit_thread/:id?' do
-    @db.update_thread(params)
-    redirect '/main'
+    after_params = check_parameter(params)
+    @db.update_thread(after_params)
+    json params
   end
 
   post '/reply_thread' do
