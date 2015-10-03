@@ -111,6 +111,11 @@ class MainApp < Sinatra::Base
     redirect '/'
   end
 
+  get '/download/:file_name' do |file_name|
+    response.headers["Content-Disposition"] = "attachment"
+    send_file "public/images/#{file_name}"
+  end
+
   post '/create_account' do
     exist_account = @db.exist_account(params[:login_user], params[:login_password])
     unless exist_account

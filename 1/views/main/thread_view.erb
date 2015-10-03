@@ -24,6 +24,7 @@
     </div>
     <% unless thread[:attachment_file_path] == nil %>
       <img src="images/<%= thread[:attachment_file_path] %>" width="450">
+      <a id="file_dl" href="/download/<%= thread[:attachment_file_path]%>">file download</a>
     <% end %>
   </div>
   <hr>
